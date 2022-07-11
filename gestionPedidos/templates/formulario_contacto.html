@@ -1,0 +1,34 @@
+<html>
+
+
+<body>
+    
+   <h1>Contáctanos</h1>
+
+   {% if form.errors %}  <!--  .errors del formulario de la API form -->
+
+   <p style="color: red;"></p>Por favor revisa este campo</p>
+
+   {% endif %}
+
+   <form action="" method="POST">{% csrf_token %}
+
+        <table>
+
+             {{form.as_table}}      <!-- .as_table muestra la tabla del formulario de la API form -->
+
+        </table>
+
+        <input type="submit" value="Enviar">
+
+
+
+
+
+
+
+   </form>
+
+
+</body>
+</html>

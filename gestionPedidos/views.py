@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import render
 from gestionPedidos.models import Articulos
+from gestionPedidos.forms import FormularioContacto
 
 # Create your views here.
 
@@ -38,16 +39,41 @@ def contacto(request):
 
     if request.method=="POST":
 
-        subject=request.POST["asunto"]
+    # ----codigo necesario para obtener la informacón que se agregó en el formulario y completar el envío del email---
 
-        message=request.POST["mensaje"] + " " + request.POST["email"]
+    #     subject=request.POST["asunto"]
 
-        email_from=settings.EMAIL_HOST_USER
+    #     message=request.POST["mensaje"] + " " + request.POST["email"]
 
-        recipient_list=["crosio.fernando@gmail.com"]
+    #     email_from=settings.EMAIL_HOST_USER
 
-        send_mail(subject, message, email_from, recipient_list)
+    #     recipient_list=["crosio.fernando@gmail.com"]
 
-        return render(request, "gracias.html")
+    #     send_mail(subject, message, email_from, recipient_list)
 
-    return render(request, "contacto.html")
+    #     return render(request, "gracias.html")
+
+    # return render(request, "contacto.html")
+
+    #------codigo necesario en caso que para obtener los datos del formulario se haga uso de la API forms,
+    # para ello es necesario importar "from gestionPedidos.forms import FormularioContacto" haciendo uso de la clase
+    # FormularioContacto en el archivo forms.py.
+
+        miFormulario=FormularioContacto(request.POST)    #se coloca request.POST como parametro de la instancia de clase FormularioContacto
+                                                         # de manera de obtener los datos que viajan desde el formulario contacto.html
+
+        if miFormulario.is_valid():     # is_valid() devuelve True en caso de que la informacion del formulario
+                                        #  del template "contacto" este validada)
+
+            infForm=miFormulario.cleaned_data    # cleaned_data devuelve un diccionario con la información
+                                                   # que se agregó en el formulario
+
+            send_mail(infForm['asunto'], infForm['mensaje'], settings.EMAIL_HOST_USER, ['crosio.fernando@gmail.com'],)
+
+            return render (request, "gracias.html")
+
+    else:
+
+        miFormulario=FormularioContacto()
+
+    return render(request, "formulario_contacto.html", {"form":miFormulario})
